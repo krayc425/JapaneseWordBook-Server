@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#coding:utf-8
 
 import sys
 import re
@@ -45,11 +46,7 @@ def soundWord(request, keyword):
     try:
         sound = re.findall(r'GetTTSVoice\("(.*?)"\)', soup.find("span", class_="jpSound").text)[0]
         # print(sound)
-        return HttpResponse(json.dumps({"sound" : sound}))
+        return HttpResponse(json.dumps({"sound" : sound}, ensure_ascii=False))
     except:
         # print("Fail")
-        return HttpResponse("Fail")
-
-# keyword = "まっしぐら"
-# keyword = sys.argv[1]
-# soundWord(keyword)
+        return HttpResponse(json.dumps({"sound" : "Fail"}, ensure_ascii=False))

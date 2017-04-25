@@ -47,22 +47,47 @@ def searchWord(request, keyword):
 
     try:
         for word in soup.find_all("div", id=re.compile("headword_jp_[0-9]*?")):
-            realKana = re.findall(r'【(.*?)】', word.find("span", id=re.compile("kana_[0-9]*?")).text)[0]
+            try:
+                realKana = re.findall(unicode(r'【(.*?)】', "utf8"), word.find("span", id=re.compile("kana_[0-9]*?")).text)[0]
+            except:
+                realKana = ''
             # print(realKana)
-            chinese = word.find("span", id=re.compile("jpword_[0-9]*?")).text
+            try:
+                chinese = word.find("span", id=re.compile("jpword_[0-9]*?")).text
+            except:
+                chinese = realKana
             # print(chinese)
-            tone = word.find("span", class_="tone_jp").text
-            # print(tone)
-            nominal = re.findall("【?(.*?)】?词", word.find("div", class_="flag big_type tip_content_item").text)[0]
-            # print(nominal)
-            meanings = [re.sub(r'(（.*?）。?)+', "", x.text) for x in word.find("ul", class_="tip_content_item jp_definition_com").find_all("span", class_= re.compile("(jp_explain|word_comment) soundmark_color"))]
-#(?: （.*?）)?
-            wordList.append({"kana" : realKana, "chinese" : chinese, "meanings" : meanings, "nominal" : nominal, "tune" : tone})
 
-        print(json.dumps(wordList, ensure_ascii=False))
+            try:
+                toneStr = word.find("span", class_="tone_jp").text
+                if toneStr == '':
+                    tone = []
+                else:
+                    tone = toneStr.split(unicode('或', "utf8"))
+            except:
+                tone = ''
+            # print(tone)
+            try:
+                nominal = re.findall(unicode("【?(.*?)】?词", "utf8"), word.find("div", class_="flag big_type tip_content_item").text)[0]
+            except:
+                nominal = ''
+            # print(nominal)
+            try:
+                meanings = [re.sub(r'(（.*?）。?)+', "", x.text) for x in word.find("ul", class_="tip_content_item jp_definition_com").find_all("span", class_= re.compile("(jp_explain|word_comment) soundmark_color"))]
+            except:
+                meanings = []
+
+            try:
+                sound = re.findall(r'GetTTSVoice\("(.*?)"\)', word.find("span", class_="jpSound").text)[0]
+            except:
+                sound = ''
+
+            wordList.append({"kana" : realKana, "chinese" : chinese, "meanings" : meanings, "nominal" : nominal, "tune" : tone, "sound" : sound})
+
+        # print(json.dumps(wordList, ensure_ascii=False))
         return HttpResponse(json.dumps(wordList, ensure_ascii=False))
     except:
-        print("Fail")
+        # print("Fail")
         return HttpResponse("Fail")
 
 # keyword = "はな"

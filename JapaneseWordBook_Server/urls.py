@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^sound/', include('sound.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^search/', include('search.urls')),
+    url(r'^sentence/', include('sentence.urls')),
 ]

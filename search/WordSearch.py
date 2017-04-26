@@ -65,15 +65,21 @@ def searchWord(request, keyword):
                 else:
                     tone = toneStr.split(unicode('或', "utf8"))
             except:
-                tone = ''
+                tone = []
             # print(tone)
             try:
                 nominal = re.findall(unicode("【?(.*?)】?词", "utf8"), word.find("div", class_="flag big_type tip_content_item").text)[0]
+                # pattern = {'形容': '形',
+                #            '形容动': '形動',
+                #            re.compile('.*?连.*?'): '連',
+                #            re.compile('.*?动.*?'): '動',
+                #            re.compile('.*?助.*?'): '助'}
+                # nominal = [unicode(pattern[x], 'utf8') if unicode(x, 'utf8') in pattern else unicode(x, 'utf8') for x in nominal]
             except:
                 nominal = ''
             # print(nominal)
             try:
-                meanings = [re.sub(r'(（.*?）。?)+', "", x.text) for x in word.find("ul", class_="tip_content_item jp_definition_com").find_all("span", class_= re.compile("(jp_explain|word_comment) soundmark_color"))]
+                meanings = [re.sub(unicode(r'(^（.*?）|（.*?）|。?（.*?）。?$|〔.*?〕)', 'utf8'), "", x.text) for x in word.find("ul", class_="tip_content_item jp_definition_com").find_all("span", class_= re.compile("(jp_explain|word_comment) soundmark_color"))]
             except:
                 meanings = []
 
@@ -84,12 +90,6 @@ def searchWord(request, keyword):
 
             wordList.append({"kana" : realKana, "chinese" : chinese, "meanings" : meanings, "nominal" : nominal, "tune" : tone, "sound" : sound})
 
-        # print(json.dumps(wordList, ensure_ascii=False))
         return HttpResponse(json.dumps(wordList, ensure_ascii=False))
     except:
-        # print("Fail")
         return HttpResponse("Fail")
-
-# keyword = "はな"
-# keyword = sys.argv[1]
-# searchWord(keyword)

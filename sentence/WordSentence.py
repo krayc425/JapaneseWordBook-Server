@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#coding:utf-8
 
 import sys
 import re
@@ -47,12 +48,11 @@ def wordSentence(request, keyword):
         tempList = soup.find("div", class_="mian_container").find("ul", class_="search_result").find_all("li")
 
         for x in tempList:
-            sentenceContent = re.sub("（|）", "", x.find("span", class_="en_sentence").text)
+            sentenceContent = re.sub(unicode("（|）", "utf8"), "", x.find("span", class_="en_sentence").text)
             sentenceSound = r'http://tts.yeshj.com/c/jp/s/?w=' + re.findall(r'getSentenceSound\("jp", "(.*?)"\)', x.text)[0]
-            sentenceMeaning = x.find("span", class_="big").text
-            sentenceList.append({"content" : sentenceContent, "sound" : sentenceSound, "meaning" : sentenceMeaning})
+            sentenceMeaning = re.sub('\.', unicode("。", "utf8"), x.find("span", class_="big").text)
 
-            # print(json.dumps(sentenceList[-1], ensure_ascii=False))
+            sentenceList.append({"content" : sentenceContent, "sound" : sentenceSound, "meaning" : sentenceMeaning})
 
         return HttpResponse(json.dumps(sentenceList, ensure_ascii=False))
     except:

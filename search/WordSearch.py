@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#coding:utf-8
+# coding:utf8
 
 import sys
 import re
@@ -35,8 +35,8 @@ headers = {
     'User-Agent': random.choice(agents)
 }
 
-def searchWord(request, keyword):
 
+def searchWord(request, keyword):
     wordURL = 'http://dict.hjenglish.com/jp/jc/' + keyword
     wordPage = requests.get(wordURL, headers=headers)
     htmlData = wordPage.text
@@ -68,18 +68,27 @@ def searchWord(request, keyword):
                 tone = []
             # print(tone)
             try:
-                nominal = re.findall(unicode("【?(.*?)】?词", "utf8"), word.find("div", class_="flag big_type tip_content_item").text)[0]
-                # pattern = {'形容': '形',
-                #            '形容动': '形動',
-                #            re.compile('.*?连.*?'): '連',
-                #            re.compile('.*?动.*?'): '動',
-                #            re.compile('.*?助.*?'): '助'}
-                # nominal = [unicode(pattern[x], 'utf8') if unicode(x, 'utf8') in pattern else unicode(x, 'utf8') for x in nominal]
+                nominal = re.findall(unicode("【?(.*?)】?词", "utf8"), word.find("div", class_="flag big_type tip_content_item").text)[0][0]
+
+                pattern = {
+                            u'形容': u'形',
+                            u'形容动': u'形動',
+                            u'连': u'連',
+                            u'动': u'動',
+                          }
+
+                for x in pattern:
+                    nominal = re.sub(x, pattern[x], nominal)
+
             except:
                 nominal = ''
             # print(nominal)
             try:
-                meanings = [re.sub(unicode(r'(^（.*?）|（.*?）|。?（.*?）。?$|〔.*?〕)', 'utf8'), "", x.text) for x in word.find("ul", class_="tip_content_item jp_definition_com").find_all("span", class_= re.compile("(jp_explain|word_comment) soundmark_color"))]
+                meanings = [re.sub(unicode(r'(^（.*?）|（.*?）|。?（.*?）。?$|〔.*?〕)', 'utf8'), "", x.text) for x in
+                            word.find("ul", class_="tip_content_item jp_definition_com").find_all("span", class_=re.compile("(jp_explain|word_comment) soundmark_color"))]
+                for x in meanings:
+                    if x == '':
+                        meanings.remove(x)
             except:
                 meanings = []
 
@@ -88,7 +97,11 @@ def searchWord(request, keyword):
             except:
                 sound = ''
 
-            wordList.append({"kana" : realKana, "chinese" : chinese, "meanings" : meanings, "nominal" : nominal, "tune" : tone, "sound" : sound})
+            wordList.append(
+                {"kana": realKana, "chinese": chinese, "meanings": meanings, "nominal": nominal, "tune": tone,
+                 "sound": sound})
+
+        # print(json.dumps(wordList, ensure_ascii=False))
 
         return HttpResponse(json.dumps(wordList, ensure_ascii=False))
     except:

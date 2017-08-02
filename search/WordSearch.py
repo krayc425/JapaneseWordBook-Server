@@ -38,7 +38,7 @@ headers = {
 
 def searchWord(request, keyword):
     wordURL = 'http://dict.hjenglish.com/jp/jc/' + keyword
-    wordPage = requests.get(wordURL, headers=headers)
+    wordPage = requests.get(wordURL, headers=headers, verify=False)
     htmlData = wordPage.text
 
     soup = BeautifulSoup(htmlData, "html.parser")

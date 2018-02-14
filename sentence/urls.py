@@ -1,8 +1,7 @@
 from django.conf.urls import url
 
-from . import views
-from . import WordSentence
+from . import WordSentenceNew
 
 urlpatterns = [
-    url(r'^(.*)$', WordSentence.wordSentence),
+    url(r'^(.*)$', WordSentenceNew.wordSentence),
 ]

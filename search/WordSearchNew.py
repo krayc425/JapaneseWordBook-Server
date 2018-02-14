@@ -9,7 +9,6 @@ import json
 import random
 from django.http import HttpResponse
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-import urllib
 
 reload(sys)
 sys.setdefaultencoding('utf8')

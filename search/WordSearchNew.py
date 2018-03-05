@@ -54,26 +54,36 @@ def searchWord(request, keyword):
         wordList = []
 
         for word in soup.find_all("div", class_="word-details-pane"):
+
             try:
                 chinese = word.find("h2").text.encode("utf8")
             except Exception as e:
+                print(e)
                 chinese = e
+
+            # print(chinese)
 
             pronounceArray = word.findAll("span")
 
             try:
                 realKana = pronounceArray[0].text.replace("[", "").replace("]", "").encode("utf8")
             except Exception as e:
+                print(e)
                 realKana = e
 
+            # print(realKana)
+
             try:
-                toneStr = pronounceArray[2].text.encode("utf8")
+                toneStr = pronounceArray[2].text
                 if toneStr == '':
                     tune = []
                 else:
                     tune = toneStr.split(unicode('或', "utf8"))
             except Exception as e:
+                print(e)
                 tune = []
+
+            # print(tune)
 
             simpleArray = word.find_all("div", class_="simple")
 
@@ -81,46 +91,48 @@ def searchWord(request, keyword):
             nominal = ""
 
             for simples in simpleArray:
-                spanArray = simples.findAll("span")
+                try:
+                    nominal = simples.find("h2").text.replace("【", "").replace("】", "").replace(" ", "").replace(
+                        unicode("词", "utf-8"), "").encode("utf8")
+                except Exception as e:
+                    print(e)
+                    nominal = ""
 
-                if len(spanArray) == 1:
-                    try:
-                        meanings = str(spanArray[0].text.replace(" ", "").replace("\n", ""))
-                    except Exception as e:
-                        meanings = ""
-                else:
-                    try:
-                        nominal = spanArray[0].text.replace("[", "").replace("]", "").replace(" ", "").replace(
-                            unicode("词", "utf-8"), "").encode("utf8")
-                    except Exception as e:
-                        nominal = ""
+                pattern = {
+                    unicode('形容'): unicode('形'),
+                    unicode('形容动'): unicode('形動'),
+                    unicode('连'): unicode('連'),
+                    unicode('动'): unicode('動'),
+                }
 
-                    pattern = {
-                        unicode('形容'): unicode('形'),
-                        unicode('形容动'): unicode('形動'),
-                        unicode('连'): unicode('連'),
-                        unicode('动'): unicode('動'),
-                    }
+                for x in pattern:
+                    nominal = re.sub(x, pattern[x], nominal)
 
-                    for x in pattern:
-                        nominal = re.sub(x, pattern[x], nominal)
+                # print(nominal)
 
-                    try:
-                        meanings = str(spanArray[1].text.replace(" ", "").replace("\n", ""))
-                    except Exception as e:
-                        meanings = ""
+                try:
+                    meaningUl = simples.find("ul")
+
+                    for meaningLi in meaningUl.findAll("li"):
+                        meanings.append(re.sub(r'[0-9]\.', "", meaningLi.text.replace(" ", "").replace("\n", "")))
+                except Exception as e:
+                    print(e)
+
+                # print(meanings)
 
             wordList.append(
                 {
                     "kana": realKana,
                     "chinese": chinese,
-                    "meanings": meanings.split(unicode('；', "utf-8")),
+                    "meanings": [x.encode("utf8") for x in meanings],
                     "nominal": nominal,
-                    "tune": tune,
+                    "tune": [x.encode("utf8") for x in tune],
                 }
             )
 
-        # print(json.dumps(wordList, ensure_ascii=False))
+            # print(wordList)
+
+        print(json.dumps(wordList, ensure_ascii=False))
 
         return HttpResponse(json.dumps(wordList, ensure_ascii=False))
     except Exception as e:

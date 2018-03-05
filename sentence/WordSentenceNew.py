@@ -42,7 +42,6 @@ headers = {
 
 
 def wordSentence(request, keyword):
-    print("Begin!!!!!")
     wordURL = 'https://dict.hjenglish.com/jp/jc/' + keyword
 
     wordPage = requests.get(wordURL, headers=headers, verify=False)
@@ -58,26 +57,13 @@ def wordSentence(request, keyword):
         toList = soup.find_all("p", class_="def-sentence-to")
         sentenceMeaningList = [x.text.strip() for x in toList]
 
-        # print(sentenceContentList)
-        # print(sentenceSoundList)
-        # print(sentenceMeaningList)
-        #
-        # print(len(sentenceContentList))
-        # print(len(sentenceSoundList))
-        # print(len(sentenceMeaningList))
-
         for i in range(len(sentenceContentList)):
             sentenceList.append(
                 {"content": sentenceContentList[i], "sound": sentenceSoundList[i], "meaning": sentenceMeaningList[i]})
 
-        # print(json.dumps(sentenceList))
+        print(json.dumps(sentenceList))
 
         return HttpResponse(
             json.dumps(sentenceList, ensure_ascii=False))
     except Exception as e:
         return HttpResponse(e)
-
-
-# keyword = "表"
-# keyword = sys.argv[1]
-# print(wordSentence(keyword))

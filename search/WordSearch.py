@@ -35,8 +35,12 @@ headers = {
     'User-Agent': random.choice(agents)
 }
 
-
 def searchWord(request, keyword):
+
+    from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
     wordURL = 'http://dict.hjenglish.com/jp/jc/' + keyword
     wordPage = requests.get(wordURL, headers=headers, verify=False)
     htmlData = wordPage.text
@@ -51,12 +55,12 @@ def searchWord(request, keyword):
                 realKana = re.findall(unicode(r'【(.*?)】', "utf8"), word.find("span", id=re.compile("kana_[0-9]*?")).text)[0]
             except:
                 realKana = ''
-            # print(realKana)
+            print(realKana)
             try:
                 chinese = word.find("span", id=re.compile("jpword_[0-9]*?")).text
             except:
                 chinese = realKana
-            # print(chinese)
+            print(chinese)
 
             try:
                 toneStr = word.find("span", class_="tone_jp").text
@@ -66,7 +70,7 @@ def searchWord(request, keyword):
                     tone = toneStr.split(unicode('或', "utf8"))
             except:
                 tone = []
-            # print(tone)
+            print(tone)
             try:
                 nominal = re.findall(unicode("【?(.*?)】?词", "utf8"), word.find("div", class_="flag big_type tip_content_item").text)[0][0]
 
@@ -82,7 +86,7 @@ def searchWord(request, keyword):
 
             except:
                 nominal = ''
-            # print(nominal)
+            print(nominal)
             try:
                 meanings = [re.sub(unicode(r'(^（.*?）|（.*?）|。?（.*?）。?$|〔.*?〕)', 'utf8'), "", x.text) for x in
                             word.find("ul", class_="tip_content_item jp_definition_com").find_all("span", class_=re.compile("(jp_explain|word_comment) soundmark_color"))]
@@ -98,10 +102,14 @@ def searchWord(request, keyword):
                 sound = ''
 
             wordList.append(
-                {"kana": realKana, "chinese": chinese, "meanings": meanings, "nominal": nominal, "tune": tone,
+                {"kana": realKana,
+                 "chinese": chinese,
+                 "meanings": meanings,
+                 "nominal": nominal,
+                 "tune": tone,
                  "sound": sound})
 
-        # print(json.dumps(wordList, ensure_ascii=False))
+        print(json.dumps(wordList, ensure_ascii=False))
 
         return HttpResponse(json.dumps(wordList, ensure_ascii=False))
     except:

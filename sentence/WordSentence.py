@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#coding:utf-8
+# coding:utf-8
 
 import sys
 import re
@@ -35,8 +35,8 @@ headers = {
     'User-Agent': random.choice(agents)
 }
 
-def wordSentence(request, keyword):
 
+def wordSentence(request, keyword):
     wordURL = 'http://dict.hjenglish.com/app/jp/sent/' + keyword
     wordPage = requests.get(wordURL, headers=headers, verify=False)
     htmlData = wordPage.text
@@ -49,16 +49,17 @@ def wordSentence(request, keyword):
 
         for x in tempList:
             sentenceContent = re.sub(unicode("（|）", "utf8"), "", x.find("span", class_="en_sentence").text)
-            sentenceSound = r'http://tts.yeshj.com/c/jp/s/?w=' + re.findall(r'getSentenceSound\("jp", "(.*?)"\)', x.text)[0]
+            sentenceSound = r'http://tts.yeshj.com/c/jp/s/?w=' + \
+                            re.findall(r'getSentenceSound\("jp", "(.*?)"\)', x.text)[0]
             sentenceMeaning = re.sub('\.', unicode("。", "utf8"), x.find("span", class_="big").text)
 
-            sentenceList.append({"content" : sentenceContent, "sound" : sentenceSound, "meaning" : sentenceMeaning})
+            sentenceList.append({"content": sentenceContent, "sound": sentenceSound, "meaning": sentenceMeaning})
 
         return HttpResponse(json.dumps(sentenceList, ensure_ascii=False))
     except:
         print("Fail")
         return HttpResponse("Fail")
 
-# keyword = "自分"
-# keyword = sys.argv[1]
-# wordSentence(keyword)
+        # keyword = "自分"
+        # keyword = sys.argv[1]
+        # wordSentence(keyword)

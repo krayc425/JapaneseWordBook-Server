@@ -37,7 +37,10 @@ agents = [
 ]
 
 headers = {
-    'User-Agent': random.choice(agents)
+    'User-Agent': random.choice(agents),
+
+    "Cookie": "HJ_UID=8ec2d4e6-4e1e-1b2c-c528-97715d4c563d; HJ_CST=1; HJ_CSST_3=1; TRACKSITEMAP=3%2C; HJ_SID=3c764591-d374-38a6-7fd8-04bb0537e628; _REF=; HJ_SSID_3=3c764591-d374-38a6-7fd8-04bb0537e628; _SREF_3=; HJ_CMATCH=1"
+
 }
 
 

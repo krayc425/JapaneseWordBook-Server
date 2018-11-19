@@ -38,11 +38,8 @@ agents = [
 
 headers = {
     'User-Agent': random.choice(agents),
-
-    "Cookie": "HJ_UID=8ec2d4e6-4e1e-1b2c-c528-97715d4c563d; HJ_CST=1; HJ_CSST_3=1; TRACKSITEMAP=3%2C; HJ_SID=3c764591-d374-38a6-7fd8-04bb0537e628; _REF=; HJ_SSID_3=3c764591-d374-38a6-7fd8-04bb0537e628; _SREF_3=; HJ_CMATCH=1"
-
+    'Cookie': 'HJ_UID=8ec2d4e6-4e1e-1b2c-c528-97715d4c563d; TRACKSITEMAP=3%2C; _REF=; _SREF_3=; HJ_SID=e56337c7-4acf-929d-50aa-73925b2e57cd; HJ_CST=0; HJ_CMATCH=1; HJ_SSID_3=7a4a1c55-29f0-a2a0-05d9-c2bd8270ba6f; HJ_CSST_3=1; _SREF_3='
 }
-
 
 def wordSentence(request, keyword):
     wordURL = 'https://dict.hjenglish.com/jp/jc/' + keyword
